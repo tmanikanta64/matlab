@@ -1,0 +1,41 @@
+clc
+clear
+n = 3;
+Pd = 975;
+a = [500; 400; 200];
+b = [5.3; 5.5; 5.8];
+c = [0.004; 0.006; 0.009];
+Pgmax = [450; 350; 215];
+Pgmin = [200; 150; 100];
+Ic = 9;
+dIc = 0.01;
+iter = 0;
+itermax = 1000;
+epslon = 0.0001;
+Pg = ones(n, 1);
+while(abs(sum(Pg) - Pd)) > epslon
+    for i = 1:n
+        Pg(i,1) = (Ic - b(i,1))/(2*c(i,1));
+        if Pg(i,1) < Pgmin(i,1)
+            Pg(i,1) = Pgmin(i,1);
+        end
+        if Pg(i,1) > Pgmax(i,1)
+            Pg(i,1) = Pgmax(i,1);
+        end
+    end                                                                                                                                                                                   
+    if (sum(Pg) - Pd) < 0
+        Ic = Ic + dIc ;
+    else
+        Ic = Ic - dIc;
+    end
+    iter = iter + 1 ;
+    if iter > itermax
+        break;
+    end
+    
+end
+Pg
+for i = 1:n
+    Cost(i,1) = a(i,1) + b(i,1)*Pg(i,1) + c(i,1)*Pg(i,1)^2;
+end
+totalcost = sum(Cost)
